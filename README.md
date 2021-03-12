@@ -7,6 +7,9 @@ The project makes use of the following components :
 - A copy of the FTDI D2XX drivers, from https://ftdichip.com/drivers/d2xx-drivers/
 - A copy of the FTD2xxj library source code available at https://sourceforge.net/projects/ftd2xxj/files/ftd2xxj/2.1/ and released under the Eclipse Public License
 
+## Requirements
+Extracting seatermUSB uses wget, unzip, gcc and _unshield_ (https://github.com/twogood/unshield) which are probably already available for your Linux distribution.
+
 ## How To
 Get and build the whole thing :
 ```bash

@@ -2,7 +2,8 @@
 
 fake=$(mktemp -d)
 
-rel_path_to_seatermusb_dir="${0%/*}"
+abspath=$(realpath "$0")
+path_to_seatermusb_dir="${abspath%/*}"
 
 if [ -d "$fake" ]
 then
@@ -23,9 +24,9 @@ then
 	touch "$fake/system32/ftd2xx64.dll"
 	
 	userprofile="$fake/userprofile" USERPROFILE="$fake/userprofile" SystemRoot="$fake" java \
-		-Djava.library.path="$(pwd)/$rel_path_to_seatermusb_dir" \
-		-Duser.dir="$(pwd)/$rel_path_to_seatermusb_dir" \
-		-jar "$(pwd)/$rel_path_to_seatermusb_dir/SeatermUSB-SBE56.jar"
+		-Djava.library.path="$path_to_seatermusb_dir" \
+		-Duser.dir="$path_to_seatermusb_dir" \
+		-jar "$path_to_seatermusb_dir/SeatermUSB-SBE56.jar"
 
 	# clean up
 	rm -Rf "$fake"
