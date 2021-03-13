@@ -23,7 +23,13 @@ then
 	touch "$fake/system32/ftd2xx.dll"
 	touch "$fake/system32/ftd2xx64.dll"
 	
-	userprofile="$fake/userprofile" USERPROFILE="$fake/userprofile" SystemRoot="$fake" java \
+	ldpreload=''
+	if [ -e "$1" ]
+	then
+		ldpreload="$1"
+	fi
+	
+	LD_PRELOAD="$ldpreload" LD_LIBRARY_PATH="$LD_LIBRARY_PATH":"$path_to_seatermusb_dir" userprofile="$fake/userprofile" USERPROFILE="$fake/userprofile" SystemRoot="$fake" java \
 		-Djava.library.path="$path_to_seatermusb_dir" \
 		-Duser.dir="$path_to_seatermusb_dir" \
 		-jar "$path_to_seatermusb_dir/SeatermUSB-SBE56.jar"
