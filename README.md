@@ -17,8 +17,8 @@ git clone https://github.com/chrisnoisel/seatermUSB-sbe56-linux.git
 cd seatermUSB-sbe56-linux
 make assemble
 ```
-You should get a directory named _seatermUSB_sbe58_ that contains the final result.
-Run the thing with `make run` or by calling directly the bash script `./seatermUSB_sbe58/seatermusb-sbe56.sh`
+You should get a directory named _seatermUSB_sbe56_ that contains the final result.
+Run the thing with `make run` or by calling directly the bash script `./seatermUSB_sbe56/seatermusb-sbe56.sh`
 
 While this seems to put everything into motion, a difference in device scanning between Windows and Linux prevents to detect any SBE56. As a temporary workaround, you can use the command `make sniff` to patch the software.
 

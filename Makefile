@@ -19,7 +19,7 @@ else
 	DEPENDENCIES += -lrt
 endif
 
-target_dir	:= seatermUSB_sbe58
+target_dir	:= seatermUSB_sbe56
 seaterm_dir	:= build/seaterm
 ftd2xxj_dir	:= build/ftd2xxj
 ftd2xxj_obj	:= $(ftd2xxj_dir)/device.o $(ftd2xxj_dir)/deviceDescriptor.o $(ftd2xxj_dir)/eeprom.o $(ftd2xxj_dir)/error.o $(ftd2xxj_dir)/ftd2xxj.o $(ftd2xxj_dir)/logger.o $(ftd2xxj_dir)/port.o $(ftd2xxj_dir)/service.o
