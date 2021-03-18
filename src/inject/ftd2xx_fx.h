@@ -7,7 +7,6 @@ FT_STATUS FT_GetQueueStatus(FT_HANDLE ftHandle,DWORD *dwRxBytes);
 FT_STATUS FT_GetStatus(FT_HANDLE ftHandle,DWORD *dwRxBytes,DWORD *dwTxBytes,DWORD *dwEventDWord);
 FT_STATUS FT_ListDevices(PVOID pArg1,PVOID pArg2,DWORD Flags);
 FT_STATUS FT_ReadEE(FT_HANDLE ftHandle,DWORD dwWordOffset,LPWORD lpwValue);
-//FT_STATUS FT_Rescan(void);
 FT_STATUS FT_SetLatencyTimer(FT_HANDLE ftHandle,UCHAR ucLatency);
 FT_STATUS FT_SetUSBParameters(FT_HANDLE ftHandle,ULONG ulInTransferSize,ULONG ulOutTransferSize);
 FT_STATUS FT_SetVIDPID(DWORD dwVID,DWORD dwPID);
@@ -69,6 +68,7 @@ FT_STATUS FT_Write(FT_HANDLE ftHandle,LPVOID lpBuffer,DWORD dwBytesToWrite,LPDWO
 // FT_STATUS FT_Purge(FT_HANDLE ftHandle,ULONG Mask);
 // FT_STATUS FT_Read(FT_HANDLE ftHandle,LPVOID lpBuffer,DWORD dwBytesToRead,LPDWORD lpBytesReturned);
 // FT_STATUS FT_Reload(WORD wVid,WORD wPid);
+// FT_STATUS FT_Rescan(void);
 // FT_STATUS FT_ResetDevice(FT_HANDLE ftHandle);
 // FT_STATUS FT_ResetPort(FT_HANDLE ftHandle);
 // FT_STATUS FT_RestartInTask(FT_HANDLE ftHandle);

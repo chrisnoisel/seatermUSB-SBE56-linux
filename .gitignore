@@ -1,3 +1,7 @@
+cache/
 build/
-seatermUSB_sbe58/
+seatermUSB_sbe56/
 preload.so
+injections.h 
+libftd2xxj.so
+ftd2xx_types.h

@@ -23,7 +23,7 @@ Run the thing with `make run` or by calling directly the bash script `./seatermU
 While this seems to put everything into motion, a difference in device scanning between Windows and Linux prevents to detect any SBE56. As a temporary workaround, you can use the command `make sniff` to patch the software.
 
 ## Building issues
-Depending on your Linux distro, your Java library can be in a different location. Change the variables _JNI_HEADERS_ and _JVM_LIB_ at the top of the Makefile. Use `make libftd2xxj` to only build the library and test the setup.
+Depending on your Linux distro, your Java library can be in a different location. Change the variables _JNI_HEADERS_ and _JVM_LIB_ at the top of _./src/ftd2xxj-native/Makefile_. Use `make libftd2xxj` to only build the library and test the setup.
 
 ## Note
 With a bit of work, it should work fine on Mac too.
