@@ -1,32 +1,64 @@
 #!/bin/bash
 
-if [ ! -e "$1" ]
-then
-	exit 1
-fi
+HEADER_F="$1"
+INJECT_F="$2"
 
-H_FILE=${2:-"injections.h"}
-C_FILE=${3:-/dev/stdout}
+shift 2
 
-function gen_inject
+exec 3< <(for regex in "$@"
+do
+	echo "$regex"
+done)
+
+FX=$(gcc -o /dev/stdout -E "$HEADER_F" | grep -Ev -e '^#' -e '^ *$' | tr -d '\n' | sed -E "s/;/;\\n/g" | sed -E 's/^ +//' | grep -E -f /dev/fd/3)
+exec 3<&-
+
+# ----------------------- headers
+
 {
-	# remove args type for later
-	args2=$(echo "$3" | sed -E 's/(^\( *)|( *\)$)//g' | tr , '\n' | tr -d '*&' | grep -Eo '[^ ]+$' | paste -sd , - | xargs printf '(%s)')
-	isvoid=$(echo " $1 " | grep " void ")
-	
 	cat <<EOF
-$1 $2$3
-{
-	INJ_dbgprint("> %s\n", "$2");
-	
-	orig_$2_type orig_$2;
-	orig_$2 = (orig_$2_type)dlsym(RTLD_NEXT,"$2");
+#include "$HEADER_F"
+
+EOF
+} > "$INJECT_F"
+
+cat <<EOF
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <dlfcn.h>
+#include "$HEADER_F"
+#include "$INJECT_F"
+#include "injtools.h"
+
 EOF
 
-	if [ -n "$isvoid" ]
+# ----------------------- functions
+
+echo "$FX" | while read func
+do
+	ret_t=$(echo "$func" | sed -E 's/([^(]+) FT_[^ ]+ *\(.+$/\1/')
+	func_n=$(echo "$func" | grep -Eo " FT_[^ (]+ ?\(" | tr -d ' ()')
+	args=$(echo "$func" | grep -Eo "\(.*\)")
+	
+	echo "typedef $ret_t (*orig_"$func_n"_type)$args;" >> "$INJECT_F"
+	
+	#gen_inject "$ret_t" "$func_n" "$args" >> "$C_FILE"
+	args2=$(echo "$args" | sed -E 's/(^\( *)|( *\)$)//g' | grep -vx void | tr , '\n' | tr -d '*&' | grep -Eo '[^ ]+$' | paste -sd , - | xargs printf '(%s)')
+	return_is_void=$(echo " $ret_t " | grep " void ")
+	
+	cat <<EOF
+${ret_t} ${func_n}${args}
+{
+	INJ_dbgprint("> %s\n", "${func_n}");
+	
+	orig_${func_n}_type orig_${func_n};
+	orig_${func_n} = (orig_${func_n}_type)dlsym(RTLD_NEXT,"${func_n}");
+EOF
+
+	if [ -n "$return_is_void" ]
 	then
 		cat <<EOF
-	orig_$2$args2;
+	orig_${func_n}${args2};
 	
 	INJ_dbgprint("<\n");
 	
@@ -34,7 +66,7 @@ EOF
 EOF
 	else
 		cat <<EOF
-	$1 ret = orig_$2$args2;
+	${ret_t} ret = orig_${func_n}${args2};
 	
 	INJ_dbgprint("< %d\n", ret);
 	
@@ -45,35 +77,7 @@ EOF
 	cat <<EOF
 }
 EOF
-
-}
-
-
-{
-	cat <<EOF
-#include "$1"
-
-EOF
-} > "$H_FILE"
-
-{
-	cat <<EOF
-#define _GNU_SOURCE
-#include <dlfcn.h>
-#include "$1"
-#include "$H_FILE"
-#include "injtools.h"
-
-EOF
-} > $C_FILE
-
-
-grep -Ev -e '^ *$' -e '^#' -e '^//' -e '^extern ' ./ftd2xx_fx.h | while read func
-do
-	ret_t=$(echo "$func" | sed -E 's/([^(]+) FT_[^ ]+ *\(.+$/\1/')
-	func_n=$(echo "$func" | grep -Eo " FT_[^ (]+ ?\(" | tr -d ' ()')
-	args=$(echo "$func" | grep -Eo "\(.*\)")
 	
-	echo "typedef $ret_t (*orig_"$func_n"_type)$args;" >> "$H_FILE"
-	gen_inject "$ret_t" "$func_n" "$args" >> "$C_FILE"
 done
+
+exit 0

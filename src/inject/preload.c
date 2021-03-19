@@ -1,7 +1,6 @@
 #define _GNU_SOURCE
 #include <dlfcn.h>
-//#include <ftd2xx.h>
-#include "ftd2xx_fx.h"
+#include "../ftd2xx/ftd2xx.h"
 #include "injections.h"
 #include "injtools.h"
 

@@ -1,19 +1,22 @@
 CC=gcc
 
-.PHONY: bootstrap filter
+LIB_BIN_PATH	:= ../ftd2xx/libftd2xx.so
+LIB_H_PATH		:= ../ftd2xx/ftd2xx.h
+LIB_FX_REGEX	:= "^FT_STATUS" "FT_W32_"
 
-bootstrap: injections.h
-	
-injections.h: ftd2xx_fx.h
-	./bootstrap.sh $< $@
+BUILD_DEPS		:= -lftd2xx -lpthread
 
-ftd2xx_fx.h ftd2xx_types.h: ../ftd2xx/ftd2xx.h
-	./filter.sh $< ftd2xx_types.h ftd2xx_fx.h
+# ----------------------
+
+LIB_DIR := $(shell dirname $(LIB_BIN_PATH))
+#LIB_NAME := $(shell echo '$(LIB_BIN_PATH)' | sed -E 's#^.+/lib([^/]+).so$$#\1#')
+
+.PHONY: bootstrap
+
+bootstrap injections.h: $(LIB_H_PATH)
+	@./bootstrap.sh $< injections.h $(LIB_FX_REGEX)
 	
-filter: ../ftd2xx/ftd2xx.h
-	./filter.sh $< ftd2xx_types.h ftd2xx_fx.h
-	
-%.so: %.c ftd2xx_fx.h ftd2xx_types.h injections.h injtools.h injtools.c
+%.so: %.c injections.h injtools.h injtools.c
 # $(CC) -ldl -shared -fPIC -ggdb3 -o $@ preload.c injtools.c
 # injection needs the dependency on 'ftd2xx' 
 # otherwise dlsym(RTLD_NEXT, "") returns a null pointer
@@ -22,10 +25,10 @@ filter: ../ftd2xx/ftd2xx.h
 # it should be possible to build against a static ftd2xxj but then libjvm must be 
 # preloaded as well and it becomes easier to manage a dynamic build
 	
-	$(CC) -L../ftd2xx -ldl -lftd2xx -shared -fPIC -ggdb3 -o $@ $< injtools.c
+	$(CC) -L$(LIB_DIR) -ldl $(BUILD_DEPS) -shared -fPIC -ggdb3 -o $@ $< injtools.c
 	ldd $@
 	nm -D $@ | awk '{if (substr($$0,18,1)=="T")print $0}'
 	
 clean:
-	@rm ftd2xx_types.h injections.h
-	@rm ./*.so
+	rm -f injections.h
+	rm -f ./*.so
